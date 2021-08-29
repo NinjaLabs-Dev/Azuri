@@ -1,23 +1,31 @@
-import voice from './join.mjs';
-import * as L from '../locale/locales.mjs';
-
+import * as L from "../locale/locales.mjs";
+import dv from "@discordjs/voice";
 export default {
-    name: 'leave',
-    aliases: [
-        'l',
-        'exit',
-        'stop',
-        'quit'
-    ],
-    description: L._U('en', 'desc_leave'),
-    execute: async (client, guildData, message, ...args) => {
-        if(!message.guild) return message.reply(L._U(guildData.locale, 'server_only'));
-        if(!voice.connection) return message.reply(L._U(guildData.locale, 'not_connected'));
+  name: "leave",
+  aliases: ["l", "exit", "stop", "quit"],
+  description: L._U("en", "desc_leave"),
+  execute: async (client, guildData, message, ...args) => {
+    if (!message.guild)
+      return message.channel.send(L._U(guildData.locale, "server_only"));
 
-        if(voice.dispatcher) await voice.dispatcher.destroy();
-
-        await message.guild.voice.channel.leave();
-
-        message.reply("👋");
+    if (
+      !message.channel.permissionsFor(message.member).has("MANAGE_GUILD") ||
+      !message.channel.permissionsFor(message.member).has("ADMINISTRATOR")
+    ) {
+      if (
+        process.env.EVERYONE_LEAVE == false ||
+        process.env.EVERYONE_LEAVE == "false"
+      )
+        return message.channel.send(
+          "❌ - Oh No! You've not got permission to use that!"
+        );
     }
+
+    if (!(await dv.getVoiceConnection(message.guild.id)))
+      return message.channel.send(L._U(guildData.locale, "not_connected"));
+
+    await connection.destroy();
+
+    message.channel.send("👋 Ok, bye");
+  },
 };

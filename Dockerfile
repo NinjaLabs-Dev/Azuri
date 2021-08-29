@@ -1,7 +1,4 @@
-FROM library/node:lts-alpine
-
-RUN apk update \
-    && apk add bash python make g++
+FROM node:16-buster
 
 RUN mkdir -p /data/node_modules
 
